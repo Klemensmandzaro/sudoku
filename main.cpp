@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Windows.h>
 #include <conio.h>
+#include <math.h>
 using namespace std;
 #define KEY_UP 72
 #define KEY_DOWN 80
@@ -8,6 +9,7 @@ using namespace std;
 #define KEY_RIGHT 77
 void set_cursor(int,int);
 void printArray(int sudoku[][9]);
+bool validateRow(int num, int row[]);
 int i, j;
 int main() {
     int sudoku[9][9]={
@@ -43,8 +45,30 @@ int main() {
             default:
                 if (isdigit(c))
                 {
-                    cout << char(c);
-                    sudoku[(y-1)/2][(x-1)/2]=c;
+                    c-=48;
+                    int tab_col[9];
+                    int tab_sq[9];
+                    for (int i=0; i<9; i++)
+                    {
+                        tab_col[i]=sudoku[i][(x - 1) / 2];
+                    }
+                    int corner_x=floor(((x - 1) / 2)/3)*3;
+                    int corner_y=floor(((y - 1) / 2)/3)*3;
+                    for (int i=0; i<3; i++)
+                    {
+                        for (int j=0; j<3; j++)
+                        {
+                            tab_sq[(i*3)+j]=sudoku[corner_y+i][corner_x+j];
+                        }
+                    }
+
+                    if (validateRow(c, sudoku[(y-1)/2])
+                    && validateRow(c, tab_col)
+                    && validateRow(c, tab_sq))
+                    {
+                        cout << c;
+                        sudoku[(y - 1) / 2][(x - 1) / 2] = c;
+                    }
                 }
         }
     }
@@ -166,4 +190,13 @@ void set_cursor(int x = 0 , int y = 0)
     coordinates.X = x;
     coordinates.Y = y;
     SetConsoleCursorPosition ( handle , coordinates );
+}
+
+bool validateRow(int num, int row[])
+{
+    for (int i=0; i<9; i++)
+    {
+        if (row[i]==num) return false;
+    }
+    return true;
 }
